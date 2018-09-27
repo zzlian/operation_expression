@@ -26,7 +26,6 @@ def post_expression_to_bitree(post_expression):
 
 """
 将生成的二叉树进行标准化处理
-若左子树表达式的值比右子树表达式的值小，则调换左右子树的位置
 parameters:
     exp_tree(dict)：表达式二叉树
 return:
@@ -56,9 +55,9 @@ def to_reg_exp_tree(exp_tree):
     left_value_sub = left_value[0] / left_value[1]
     right_value_sub = right_value[0] / right_value[1]
     # 进行表达式的规范化处理
-    if ((max_lvalue < max_rvalue or (left_value_sub < right_value_sub) or (max_lvalue == max_rvalue and
-        ((left_operator == '*' and right_operator == '/') or (left_operator != '_' and right_operator == '_'))))
-        and key in ['+', '*']):                              # 进行表达式的规范化处理
+    if ((max_lvalue < max_rvalue or (left_value_sub < right_value_sub and left_operator != '_' and right_operator != '_')
+        or (max_lvalue == max_rvalue and ((left_operator == '*' and right_operator == '/') or (left_operator != '_' and
+        right_operator == '_')))) and key in ['+', '*']):    # 进行表达式的规范化处理
         exp_tree[key] = [child[1], child[0]]                  # 交换左右子树
         (left_value, right_value) = (right_value, left_value)
     elif left_value_sub < right_value_sub and key == '-':    # 表达式出现负数
@@ -78,8 +77,8 @@ def to_reg_exp_tree(exp_tree):
 计算字符串表达式的值
 parameters:
     operator(str)：操作符
-    left_value(float)：表达式的左操作符
-    right_value(float)：表达式的右操作符
+    left_value(float)：表达式的左操作数
+    right_value(float)：表达式的右操作数
 return:
     result(tuple)：分数组成的元组,第一个值为分子，第二个值为分母
 """

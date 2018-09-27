@@ -7,7 +7,7 @@ parameters:
     n(int)：四则运算表达式的个数
     r(int)：操作数的值上界
 return:
-    mid_exps(list)：中缀表达式列表
+    mid_exps(list)：存储中缀表达式的列表
 """
 def generate_mid_exp(max_num):
     data_num = random.randint(2, 4)     # 操作数个数
@@ -50,10 +50,10 @@ def generate_mid_exp(max_num):
 """
 以33%的概率，给生成的表达式加上括号
 parameters:
-    mid_exp(str)：随机生成的表达式
+    mid_exp(list)：随机生成的表达式
     data_num(int)：操作数个数
 return:
-    mid_exp(str)：处理的中缀表达式
+    mid_exp(list)：处理后的中缀表达式
 """
 def add_bracket(mid_exp, data_num):
     # 为生成的表达式加括号
