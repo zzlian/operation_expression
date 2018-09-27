@@ -37,19 +37,20 @@ def generate_expressions(n, r):
     reg_mid_exps = []   # 规范化后的表达式
     exp_num = 0
     while exp_num != n:
-        origin_exp = generate_mid_exp(r)                # 随机生成表达式
-        mid_exp = origin_exp[:]
-        post_exp = mid_expression_to_post_expression(mid_exp) # 生成后缀表达式
-        exp_tree = post_expression_to_bitree(post_exp)  # 生成后缀表达式对应的二叉树
-        (answer,_,_) = to_reg_exp_tree(exp_tree)        # 规范化生成的二叉树
-        if not answer: # 生成的表达式出现负数，舍弃
-            continue
-
-        reg_mid_exp = exp_tree_to_mid_exp(exp_tree)     # 生成规范化后的中缀表达式
-        if reg_mid_exp not in reg_mid_exps:            # 判断生成的表达式是否重复
+        origin_exp, reg_mid_exp, answer = generate_mid_exp(r)  # 随机生成表达式
+        if reg_mid_exp == None:
+            mid_exp = origin_exp[:]
+            post_exp = mid_expression_to_post_expression(mid_exp) # 生成后缀表达式
+            exp_tree = post_expression_to_bitree(post_exp)  # 生成后缀表达式对应的二叉树
+            (answer,_,_) = to_reg_exp_tree(exp_tree)        # 规范化生成的二叉树
+            if not answer: # 生成的表达式出现负数，舍弃
+                continue
+            reg_mid_exp = exp_tree_to_mid_exp(exp_tree)     # 生成规范化后的中缀表达式
+        # 判断生成的表达式是否重复
+        if reg_mid_exp not in reg_mid_exps:
             mid_exps.append(origin_exp)
             # 将表达式的值标准化
-            common_div = gcd(answer[0], answer[1])  # 最大公约数
+            common_div = gcd(answer[0], answer[1])         # 最大公约数
             answer = (int(answer[0] / common_div), int(answer[1] / common_div))  # 约分
             if answer[1] == 1:
                 answer = answer[0]
@@ -74,7 +75,11 @@ def generate_expressions(n, r):
             a_file.write('{:d}. {}\n'.format(i+1, str(answers[i])))
 
 """
-评分
+将答案进行评分
+parameters:
+    exp_filename(str)：表达式文件路径
+    a_filename(str)：需要进行评分的答案文件路径
+评分结果写入到Grade.txt文件中
 """
 def grade(exp_filename, a_filename):
     dirname = re.sub(exp_filename, '', os.path.abspath(exp_filename))

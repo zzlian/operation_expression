@@ -22,12 +22,30 @@ def generate_mid_exp(max_num):
         operator = operators[int(random.random() * 4)]
         select_operators.append(operator)
 
+    # 操作符只存在 + 或 *，进行特殊处理
+    select_operators_set = set(select_operators)
+    op = select_operators_set.copy().pop()
+    reg_mid_exp = None
+    expression_value = None
+    if len(select_operators_set) == 1 and op in ['+', '*']:
+        reg_mid_exp = list(map(str, sorted(datas, reverse=True)))
+        expression_value = datas[0]
+        for i in range(len(reg_mid_exp)-1):
+            reg_mid_exp.insert(i*2+1, op)
+            if op == '+':
+                expression_value = expression_value + datas[i+1]
+            else:
+                expression_value = expression_value * datas[i+1]
+    # 生成中缀表达式
     mid_exp = [datas[-1]]
-    for i in range(data_num - 1):      # 生成中缀表达式
+    for i in range(data_num - 1):
         mid_exp.append(select_operators[i])
         mid_exp.append(datas[i])
-    mid_exp = add_bracket(mid_exp, len(datas))
-    return mid_exp
+    mid_exp = add_bracket(mid_exp, len(datas)) # 以33%的概率随机生成括号
+    if reg_mid_exp == None:         # 操作符随机的情况
+        return mid_exp, None, None
+    else:                           # 操作符全为 + 或 * 的情况
+        return mid_exp, ' '.join(reg_mid_exp), (expression_value,1)
 
 """
 以33%的概率，给生成的表达式加上括号

@@ -37,10 +37,10 @@ return:
 def to_reg_exp_tree(exp_tree):
     (key, child), = exp_tree.items()  # 获取子树
 
-    if type(child[0]) == type(1) or type(child[0]) == type(0.1):  # 左子树的操作数
+    if type(child[0]) == type(1) or type(child[0]) == type(0.1):   # 左子树的操作数
         left_value = (child[0], 1)
         max_lvalue = child[0]
-        left_operator = '_'
+        left_operator = '_'          # 非操作符
     else:                            # 递归规范左子树
         left_value, max_lvalue, left_operator = to_reg_exp_tree(child[0])
         if left_value == None:
@@ -55,18 +55,22 @@ def to_reg_exp_tree(exp_tree):
             return None, None, None
     left_value_sub = left_value[0] / left_value[1]
     right_value_sub = right_value[0] / right_value[1]
-    if ((left_value_sub < right_value_sub or (left_value_sub == right_value_sub and (max_lvalue < max_rvalue or
-        (left_operator == '/' and right_operator == '*')))) and key in ['+', '*']): # 进行表达式的规范化处理
-        exp_tree[key] = [child[1], child[0]]       # 交换左右子树
+    # 进行表达式的规范化处理
+    if ((max_lvalue < max_rvalue or (left_value_sub < right_value_sub) or (max_lvalue == max_rvalue and
+        ((left_operator == '*' and right_operator == '/') or (left_operator != '_' and right_operator == '_'))))
+        and key in ['+', '*']):                              # 进行表达式的规范化处理
+        exp_tree[key] = [child[1], child[0]]                  # 交换左右子树
         (left_value, right_value) = (right_value, left_value)
-    elif left_value_sub < right_value_sub and key == '-': # 表达式出现负数
+    elif left_value_sub < right_value_sub and key == '-':    # 表达式出现负数
         return None, None, None
-    if left_value_sub >= right_value_sub:
-        max_value = left_value[0] / left_value[1]
+    # 计算当前子树的最大操作数
+    if max_lvalue >= max_rvalue:
+        max_value = max_lvalue
     else:
-        max_value = right_value[0] / right_value[1]
-    value = calculate(key, left_value, right_value) # 计算子表达式的值
-    if value == None:   # 表达式中除数出现0的情况
+        max_value = max_rvalue
+    # 计算表达式的值
+    value = calculate(key, left_value, right_value)
+    if value == None:             # 表达式中除数出现0的情况
         return None, None, None
     return value, max_value, key
 
@@ -77,7 +81,7 @@ parameters:
     left_value(float)：表达式的左操作符
     right_value(float)：表达式的右操作符
 return:
-    result(float/tuple)：计算结果值，或者分数组成的元组
+    result(tuple)：分数组成的元组,第一个值为分子，第二个值为分母
 """
 def calculate(operator, left_value, right_value):
     tuple_type = type(())
